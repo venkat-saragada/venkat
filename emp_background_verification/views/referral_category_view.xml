@@ -1,0 +1,51 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+    
+     <record model="ir.ui.view" id="referral_category_form_view">
+      <field name="name">Referral Category Form</field>
+      <field name="model">referral_category.referral_category</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+            <group>
+              <field name="referral_category_name"/>
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+    <record model="ir.ui.view" id="referral_category_tree_view">
+      <field name="name">Referral Category Tree</field>
+      <field name="model">referral_category.referral_category</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="referral_category_name"/>
+        </tree>
+      </field>
+    </record>
+    <record model="ir.actions.act_window" id="referral_category_window">
+      <field name="name">Referral Category Window</field>
+      <field name="res_model">referral_category.referral_category</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+    <record model="ir.actions.act_window" id="referral_category_action" >
+      <field name="name">Referral Category</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">referral_category.referral_category</field>
+      <field name="view_mode">tree,form</field>
+      <field name="help" type="html">
+        <p class="oe_view_nocontent_create">
+          <!-- Add Text Here -->
+        </p>
+        <p>
+          <!-- More details about what a user can do with this object will be OK -->
+        </p>
+      </field>
+    </record>
+    <!-- Root Menu -->
+    <menuitem name="Background Verification" id="emp_background_verification.menu_root" groups="base.group_user"/>
+    <!-- Menu Item -->
+    <menuitem name="Referral Category" id="emp_background_verification" parent="emp_background_verification.menu_root" action="referral_category_action"/>
+  </data>
+</odoo>

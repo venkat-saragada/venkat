@@ -1,0 +1,51 @@
+<odoo>
+  <data>
+    <record model="ir.ui.view" id="referral_checklist_form_view">
+      <field name="name">Referral Checklist Form</field>
+      <field name="model">referral_check_list.referral_check_list</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+            <group>
+              <field name="country_id"/>
+              <field name="referral_category"/>
+              <field name="referral_checklist_name"/>
+            </group>
+          </sheet>
+        </form>
+      </field>
+    </record>
+    <record model="ir.ui.view" id="referral_checklist_tree_view">
+      <field name="name">Referral Checklist Tree</field>
+      <field name="model">referral_check_list.referral_check_list</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="country_id"/>
+          <field name="referral_category"/>
+          <field name="referral_checklist_name"/>
+        </tree>
+      </field>
+    </record>
+    <record model="ir.actions.act_window" id="referral_checklist_window">
+      <field name="name">Referral Checklist Window</field>
+      <field name="res_model">referral_check_list.referral_check_list</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+    <record model="ir.actions.act_window" id="referral_checklist_action" >
+      <field name="name">Referral Checklist</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">referral_check_list.referral_check_list</field>
+      <field name="view_mode">tree,form</field>
+      <field name="help" type="html">
+        <p class="oe_view_nocontent_create">
+          <!-- Add Text Here -->
+        </p>
+        <p>
+          <!-- More details about what a user can do with this object will be OK -->
+        </p>
+      </field>
+    </record>
+    <!-- Menu Item -->
+    <menuitem name="Referral Checklist" id="emp_referral_checklist" parent="emp_background_verification.menu_root" action="referral_checklist_action"/>
+  </data>
+</odoo>
