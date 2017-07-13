@@ -20,14 +20,17 @@
 
     # any module necessary for this one to work correctly
     'depends': ['base','hr','auth_signup'],
-
+    # images
+    'images':[
+        'static/description/icon.png',
+    ],
     # always loaded
     'data': [
         'security/bgv_security.xml',
         'security/ir.model.access.csv',
         'views/views.xml',
         'views/templates.xml',
-        'views/referral_category_view.xml',
+        # 'views/referral_category_view.xml',
         'views/referral_checklist_view.xml',
         'views/verification.xml',
     ],

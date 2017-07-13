@@ -5,7 +5,7 @@ from odoo import exceptions
 from odoo.exceptions import ValidationError, Warning, UserError,except_orm
 from odoo.tools.translate import _
 import time
-from custom_functions import validation_alphanumeric_characters_only
+from custom_functions import check_file_format
 import re
 
 class ReferralCategory(models.Model):
@@ -14,7 +14,6 @@ class ReferralCategory(models.Model):
 	_sql_constraints = [('category_name_uniq', 'unique(referral_category_name)', 'Category already exists..!')]
 
 	referral_category_name = fields.Char(string="Referral Category Name", )
-	
 
 
 class reference_check_list(models.Model):
@@ -22,7 +21,6 @@ class reference_check_list(models.Model):
 	_rec_name = 'referral_checklist_name'
 	_sql_constraints = [('checklist_name_uniq', 'unique(referral_checklist_name, country_id)', 'Checklist Name already exists for this Country..!')]
 
-	
 	referral_checklist_name = fields.Char(string="Referral Checklist Name",)
 	# referral_category = fields.Many2one('referral_category.referral_category',string ="Referral Category",)
 	referral_category = fields.Selection([('address', 'Address'),('academics', 'Academics'),('employment', 'Employment')])
@@ -32,7 +30,7 @@ class reference_check_list(models.Model):
 class emp_background_verification(models.Model):
 	_name = 'emp_verification.emp_verification'
 	_rec_name = 'user_id'
-	# _inherit = ['mail.thread']
+	_inherit = ['mail.thread']
 	_sql_constraints = [('user_id_uniq', 'unique(user_id)', 'Record for this User already exists..!')]
 
 	user_id = fields.Many2one('res.users',string="User Id", default=lambda self: self.env.uid,)
@@ -53,13 +51,10 @@ class emp_background_verification(models.Model):
 	address_proof_id = fields.Char(string="Address Proof No.")
 	address_proof = fields.Binary(string="Address Proof")
 	address_file = fields.Char(string="Address Proof File")
-	
 	# Academic fields
 	academic_details_id = fields.One2many(comodel_name='academic.details', inverse_name='parent_id', string='Academic Details')
-		
 	# Employment fields
 	employment_details_id = fields.One2many(comodel_name='employment.details', inverse_name='parent_id', string='Employment History',)
-	
 	# Passport fields
 	name_as_per_passport = fields.Char(string="Name as per Passport")
 	passport_number = fields.Char(string="Passport No.")
@@ -68,31 +63,9 @@ class emp_background_verification(models.Model):
 	place_of_issue = fields.Char(string="Place of Issue")
 	upload_passport = fields.Binary(string="Passport")
 	passport_file = fields.Char(string="Passport File")
+	# state = fields.Selection([('draft','Draft'),('waiting','Waiting'),('verified','Verified')], default='draft', string='Status')
+	state = fields.Selection([('draft','Draft'),('waiting','Waiting'),('verified','Verified')], default='draft', string='Status',track_visibility='always')
 
-	state = fields.Selection([('draft','Draft'),('waiting','Waiting'),('verified','Verified')], default='draft', string='Status')
-	# state = fields.Selection([('draft','Draft'),('waiting','Waiting'),('verified','Verified')], default='draft', string='Status',track_visibility='always')
-
-	# def check_file_type(curr_file):
-	# 	file_name = curr_file
-	# 	tmp = file_name.split('.')
-	# 	ext = tmp[-1]
-	# 	if ext not in ['pdf']:
-	# 		raise Warning('Upload file in pdf file format only...!')
-
-	# @api.onchange('address_proof_id')
-	# def on_change_address_proof_id(self):
-	# 	if self.address_proof_id:
-	# 		if not validation_alphanumeric_characters_only(self.address_proof_id):
-	# 			warning_result = {
- #                    'warning': {
- #                                   'title': "Warning -Validation Error",
- #                                   'message': "Address Proof Number allows only Alphanumeric Characters"
- #                               }
-
- #                }
- #                return warning_result
- #            else:
- #            	self.address_proof_id = self.address_proof_id.upper()
  	@api.onchange('address_proof_id','passport_number')
 	def on_change_address_proof_id_passport_no(self):
 		if self.address_proof_id:
@@ -100,30 +73,17 @@ class emp_background_verification(models.Model):
 		if self.passport_number:
 			self.passport_number = self.passport_number.upper()
 
-
 	@api.onchange('address_file')
 	def on_change_address_file(self):
-		''' check file type
-		'''
 		if self.address_file:
-			file_name = self.address_file
-			tmp = file_name.split('.')
-			ext = tmp[-1]
-			if ext not in ['pdf']:
+			if check_file_format(self.address_file):
 				raise Warning('Upload file in pdf format only...!')
 
-	
 	@api.onchange('passport_file')
 	def on_change_passport_file(self):
-		''' check file type
-		'''
 		if self.passport_file:
-			file_name = self.passport_file
-			tmp = file_name.split('.')
-			ext = tmp[-1]
-			if ext not in ['pdf']:
+			if check_file_format(self.passport_file):
 				raise Warning('Upload file in pdf format only...!')
-
 
 	@api.onchange('passport_issue_date','passport_expiry_date')
 	def on_change_passport_expiry_date(self):
@@ -178,9 +138,9 @@ class emp_background_verification(models.Model):
 	def verify(self):
 		self.state='verified'
 
+
 class AcademicDetails(models.Model):
 	_name = 'academic.details'
-
 	_sql_constraints = [('academic_checklist_uniq', 'unique(qualification_checklist, parent_id)', 'Duplicate Qualification Records not allowed..!')]
 
 	parent_id = fields.Many2one('emp_verification.emp_verification', string='Academic Details Id')
@@ -197,13 +157,8 @@ class AcademicDetails(models.Model):
 
 	@api.onchange('marks_sheet_file')
 	def on_change_marks_sheet_file(self):
-		''' check file type
-		'''
 		if self.marks_sheet_file:
-			file_name = self.marks_sheet_file
-			tmp = file_name.split('.')
-			ext = tmp[-1]
-			if ext not in ['pdf']:
+			if check_file_format(self.marks_sheet_file):
 				raise Warning('Upload file in pdf format only...!')
 
 	@api.onchange('percentage')
@@ -216,7 +171,6 @@ class AcademicDetails(models.Model):
 
 class EmploymentDetails(models.Model):
 	_name = 'employment.details'
-
 	_sql_constraints = [('employment_checklist_uniq', 'unique(employment_checklist, parent_id)', 'Duplicate Employer Records not allowed..!')]
 
 	parent_id = fields.Many2one('emp_verification.emp_verification', string='Employment History Id')
@@ -237,38 +191,22 @@ class EmploymentDetails(models.Model):
 	hr_name = fields.Char(string="HR Name")
 	hr_email = fields.Char(string="HR Email Id")
 
-
 	@api.onchange('relieving_file')
 	def on_change_relieving_file(self):
-		''' check file type
-		'''
 		if self.relieving_file:
-			file_name = self.relieving_file
-			tmp = file_name.split('.')
-			ext = tmp[-1]
-			if ext not in ['pdf']:
+			if check_file_format(self.relieving_file):
 				raise Warning('Upload file in pdf format only...!')
-
 	
 	@api.onchange('payslip_file')
 	def on_change_payslip_file(self):
-		''' check file type
-		'''
 		if self.payslip_file:
-			file_name = self.payslip_file
-			tmp = file_name.split('.')
-			ext = tmp[-1]
-			if ext not in ['pdf']:
+			if check_file_format(self.payslip_file):
 				raise Warning('Upload file in pdf format only...!')
-				self.upload_payslip = ''
-				self.payslip_file = ''
-
  	
  	@api.onchange('hr_email')
  	def on_change_hr_email(self):
  		if self.hr_email:
  			email_val = self.hr_email
- 			# raise Warning('Test1')
  			if re.match("^.+\\@(\\[?)[a-zA-Z0-9\\-\\.]+\\.([a-zA-Z]{2,3}|[0-9]{1,3})(\\]?)$", email_val) != None:
  				self.hr_email = email_val
  			else:
