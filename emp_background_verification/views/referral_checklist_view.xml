@@ -1,5 +1,31 @@
 <odoo>
   <data>
+    <record model="ir.ui.view" id="referral_check_list_kanban_view">
+          <field name="name">Referral Checklist Kanban</field>
+          <field name="model">referral_check_list.referral_check_list</field>
+          <field name="arch" type="xml">
+              <kanban default_group_by="referral_category" class="o_kanban_small_column">
+                  <!-- <field name="referral_checklist_name"/> -->
+                  <templates>
+                      <t t-name="kanban-box">
+                          <div class="oe_kanban_vignette.oe_semantic_html_override">
+                              <div class="oe_kanban_details">
+                                  <h4>
+                                      <a type="open">
+                                        <field name="referral_checklist_name"/>
+                                      </a>
+                                  </h4>
+                                  <div name="tags"/>
+                                  <ul>
+                                      <li><field name="country_id"></field></li>
+                                  </ul>
+                              </div>
+                          </div>
+                      </t>
+                  </templates>
+              </kanban>
+          </field>
+      </record>
     <record model="ir.ui.view" id="referral_checklist_form_view">
       <field name="name">Referral Checklist Form</field>
       <field name="model">referral_check_list.referral_check_list</field>
@@ -35,7 +61,7 @@
       <field name="name">Referral Checklist</field>
       <field name="type">ir.actions.act_window</field>
       <field name="res_model">referral_check_list.referral_check_list</field>
-      <field name="view_mode">tree,form</field>
+      <field name="view_mode">kanban,tree,form</field>
       <field name="help" type="html">
         <p class="oe_view_nocontent_create">
           <!-- Add Text Here -->
